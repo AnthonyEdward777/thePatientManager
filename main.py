@@ -1,4 +1,8 @@
-print("Patient management system")
+import sqlite3
+import datetime
+
+conn = sqlite3.connect('clinic.db')
+c = conn.cursor()
 
 class patients:
     def __init__(self, name, age, NID):
