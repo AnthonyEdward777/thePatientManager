@@ -20,23 +20,3 @@ class App(ctk.CTk):
         
         self.appointmentsTab = self.tabview.add("Appointments")
         self.addAppointmentTab_content()
-        
-    def addDoc(self):
-        self.name_label = ctk.CTkLabel(self, text="Name:")
-        self.name_label.pack(pady=10)
-        self.name_entry = ctk.CTkEntry(self)
-        self.name_entry.pack(pady=10)
-
-        self.age_label = ctk.CTkLabel(self, text="Age:")
-        self.age_label.pack(pady=10)
-        self.age_entry = ctk.CTkEntry(self)
-        self.age_entry.pack(pady=10)
-
-        self.nid_label = ctk.CTkLabel(self, text="NID:")
-        self.nid_label.pack(pady=10)
-        self.nid_entry = ctk.CTkEntry(self)
-        self.nid_entry.pack(pady=10)
-
-        # Create submit button
-        self.submit_button = ctk.CTkButton(self, text="Submit", command=self.submit)
-        self.submit_button.pack(pady=20)
