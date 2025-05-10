@@ -31,3 +31,47 @@ def init_db():
 
     conn.commit()
     conn.close()
+    
+
+class doctors:
+    def __init__(self, name, age, NID):
+        self.name = name
+        self.age = age
+        self.NID = NID
+    
+    def fetchAllDoctors(self):
+        conn = sql.connect('clinic.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM doctors")
+        doctors = c.fetchall()
+        conn.close()
+        return doctors
+    
+    def addDoctor(self):
+        conn = sql.connect('clinic.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO doctors (name, age) VALUES (?, ?)", (self.name, self.NID,self.age))
+        conn.commit()
+        conn.close()   
+    
+    def deleteDoctor(self):
+        conn = sql.connect('clinic.db')
+        c = conn.cursor()
+        c.execute("DELETE FROM doctors WHERE NID=?", (self.NID,))
+        conn.commit()
+        conn.close()
+    
+    def updateDoctor(self):
+        conn = sql.connect('clinic.db')
+        c = conn.cursor()
+        c.execute("UPDATE doctors SET name=?, age=? WHERE NID=?", (self.name, self.age, self.NID))
+        conn.commit()
+        conn.close()
+        
+    def docExists(self):
+        conn = sql.connect('clinic.db')
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM doctors WHERE NID=?", (self.NID,))
+        doctor = c.fetchone()
+        conn.close()
+        return result[0] > 0

@@ -1,7 +1,4 @@
 import customtkinter as ctk
-from entities.patients import patients
-from entities.doctors import doctors
-from entities.appointments import appointments
 
 class App(ctk.CTk):
     def __init__(self):
