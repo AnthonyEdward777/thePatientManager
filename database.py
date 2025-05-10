@@ -74,4 +74,4 @@ class doctors:
         c.execute("SELECT COUNT(*) FROM doctors WHERE NID=?", (self.NID,))
         doctor = c.fetchone()
         conn.close()
-        return result[0] > 0
+        return doctor[0] > 0
