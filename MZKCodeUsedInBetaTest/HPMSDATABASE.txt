@@ -1,0 +1,37 @@
+import sqlite3
+
+connection = sqlite3.connect('Healthcare_Patient_Management_System.db')
+cursor = connection.cursor()
+
+# DOCTORS_Table
+command1 = """CREATE TABLE IF NOT EXISTS
+stores(DoctorID INTEGER PRIMARY KEY AUTOINCREMENT, FirstName TEXT NOT NULL, LastName TEXT NOT NULL,
+Specialty TEXT, Phone TEXT)"""
+
+cursor.execute(command1)
+
+# Patients_Table
+command2 = """CREATE TABLE IF NOT EXISTS 
+stores(PatientID INTEGER PRIMARY KEY AUTOINCREMENT, FirstName TEXT NOT NULL, LastName TEXT NOT NULL,
+DOB TEXT, Gender TEXT, Phone TEXT, DoctorID INTEGER, FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID))"""
+
+cursor.execute(command2)
+
+# APPOINTMENTS_Table
+command3 = """CREATE TABLE IF NOT EXISTS
+stores(AppointmentID INTEGER PRIMARY KEY AUTOINCREMENT, PatientID INTEGER NOT NULL, DoctorID INTEGER NOT NULL,
+Date TEXT NOT NULL, Time TEXT NOT NULL, Reason TEXT, FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID))"""
+
+cursor.execute(command3)
+
+# TREATMENTS_Table
+command4 = """CREATE TABLE IF NOT EXISTS
+stores(TreatmentID INTEGER PRIMARY KEY AUTOINCREMENT, PatientID INTEGER NOT NULL, DoctorID INTEGER NOT NULL,
+Date TEXT NOT NULL, Description TEXT, Medication TEXT, FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID))"""
+
+cursor.execute(command4)
+
+connection.commit()
+connection.close()

@@ -1,0 +1,221 @@
+import customtkinter as ctk
+import sqlite3
+
+app = ctk.CTk()
+app.title("Healthcare Patient Management System")
+app.geometry("800x600")
+
+tabview = ctk.CTkTabview(app)
+tabview.pack(expand=True, fill="both")
+
+# --- Doctor Tab ---
+doctor_tab = tabview.add("Doctors")
+
+# --- Patient Tab ---
+patient_tab = tabview.add("Patients")
+
+# --- Appointment Tab ---
+appointment_tab = tabview.add("Appointments")
+
+# --- Treatment Tab ---
+treatment_tab = tabview.add("Treatments")
+
+# -------------------
+# Doctor Tab Setup
+# -------------------
+# Doctor Input Fields
+entry_id = ctk.CTkEntry(doctor_tab, placeholder_text="Doctor ID")
+entry_fname = ctk.CTkEntry(doctor_tab, placeholder_text="First Name")
+entry_lname = ctk.CTkEntry(doctor_tab, placeholder_text="Last Name")
+entry_specialty = ctk.CTkEntry(doctor_tab, placeholder_text="Specialty")
+entry_phone = ctk.CTkEntry(doctor_tab, placeholder_text="Phone")
+search_entry = ctk.CTkEntry(doctor_tab, placeholder_text="Search by Name")
+
+for e in [entry_id, entry_fname, entry_lname, entry_specialty, entry_phone, search_entry]:
+    e.pack(pady=5)
+
+# Display Box for Doctors
+display_box = ctk.CTkTextbox(doctor_tab, width=700, height=200)
+display_box.pack(pady=10)
+
+# Doctor CRUD Functions
+def gui_add_doctor():
+    sqlite3.add_doctor(entry_fname.get(), entry_lname.get(), entry_specialty.get(), entry_phone.get())
+    gui_view_doctors()
+
+def gui_update_doctor():
+    sqlite3.update_doctor(entry_id.get(), entry_fname.get(), entry_lname.get(), entry_specialty.get(), entry_phone.get())
+    gui_view_doctors()
+
+def gui_delete_doctor():
+    sqlite3.delete_doctor(entry_id.get())
+    gui_view_doctors()
+
+def gui_view_doctors():
+    display_box.delete("0.0", "end")
+    for doc in sqlite3.view_all_doctors():
+        display_box.insert("end", f"{doc}\n")
+
+def gui_search_doctor():
+    display_box.delete("0.0", "end")
+    for doc in sqlite3.search_doctors(search_entry.get()):
+        display_box.insert("end", f"{doc}\n")
+
+# Doctor Buttons
+btn_frame = ctk.CTkFrame(doctor_tab)
+btn_frame.pack(pady=10)
+
+ctk.CTkButton(btn_frame, text="Add", command=gui_add_doctor).pack(side="left", padx=10)
+ctk.CTkButton(btn_frame, text="Update", command=gui_update_doctor).pack(side="left", padx=10)
+ctk.CTkButton(btn_frame, text="Delete", command=gui_delete_doctor).pack(side="left", padx=10)
+ctk.CTkButton(btn_frame, text="View All", command=gui_view_doctors).pack(side="left", padx=10)
+ctk.CTkButton(btn_frame, text="Search", command=gui_search_doctor).pack(side="left", padx=10)
+
+
+# -------------------
+# Patient Tab Setup
+# -------------------
+# Patient Input Fields
+entry_pid = ctk.CTkEntry(patient_tab, placeholder_text="Patient ID")
+entry_pfname = ctk.CTkEntry(patient_tab, placeholder_text="First Name")
+entry_plname = ctk.CTkEntry(patient_tab, placeholder_text="Last Name")
+entry_dob = ctk.CTkEntry(patient_tab, placeholder_text="Date of Birth")
+entry_gender = ctk.CTkEntry(patient_tab, placeholder_text="Gender")
+entry_phone = ctk.CTkEntry(patient_tab, placeholder_text="Phone")
+search_patient_entry = ctk.CTkEntry(patient_tab, placeholder_text="Search by Name")
+
+for e in [entry_pid, entry_pfname, entry_plname, entry_dob, entry_gender, entry_phone, search_patient_entry]:
+    e.pack(pady=5)
+
+# Display Box for Patients
+display_patient_box = ctk.CTkTextbox(patient_tab, width=700, height=200)
+display_patient_box.pack(pady=10)
+
+# Patient CRUD Functions
+def gui_add_patient():
+    sqlite3.add_patient(entry_pfname.get(), entry_plname.get(), entry_dob.get(), entry_gender.get(), entry_phone.get())
+    gui_view_patients()
+
+def gui_update_patient():
+    sqlite3.update_patient(entry_pid.get(), entry_pfname.get(), entry_plname.get(), entry_dob.get(), entry_gender.get(), entry_phone.get())
+    gui_view_patients()
+
+def gui_delete_patient():
+    sqlite3.delete_patient(entry_pid.get())
+    gui_view_patients()
+
+def gui_view_patients():
+    display_patient_box.delete("0.0", "end")
+    for patient in sqlite3.view_all_patients():
+        display_patient_box.insert("end", f"{patient}\n")
+
+def gui_search_patient():
+    display_patient_box.delete("0.0", "end")
+    for patient in sqlite3.search_patients(search_patient_entry.get()):
+        display_patient_box.insert("end", f"{patient}\n")
+
+# Patient Buttons
+btn_patient_frame = ctk.CTkFrame(patient_tab)
+btn_patient_frame.pack(pady=10)
+
+ctk.CTkButton(btn_patient_frame, text="Add", command=gui_add_patient).pack(side="left", padx=10)
+ctk.CTkButton(btn_patient_frame, text="Update", command=gui_update_patient).pack(side="left", padx=10)
+ctk.CTkButton(btn_patient_frame, text="Delete", command=gui_delete_patient).pack(side="left", padx=10)
+ctk.CTkButton(btn_patient_frame, text="View All", command=gui_view_patients).pack(side="left", padx=10)
+ctk.CTkButton(btn_patient_frame, text="Search", command=gui_search_patient).pack(side="left", padx=10)
+
+
+# -------------------
+# Appointment Tab Setup
+# -------------------
+# Appointment Input Fields
+entry_aid = ctk.CTkEntry(appointment_tab, placeholder_text="Appointment ID")
+entry_pid_app = ctk.CTkEntry(appointment_tab, placeholder_text="Patient ID")
+entry_docid_app = ctk.CTkEntry(appointment_tab, placeholder_text="Doctor ID")
+entry_date = ctk.CTkEntry(appointment_tab, placeholder_text="Date")
+entry_reason = ctk.CTkEntry(appointment_tab, placeholder_text="Reason")
+search_appointment_entry = ctk.CTkEntry(appointment_tab, placeholder_text="Search by Reason")
+
+for e in [entry_aid, entry_pid_app, entry_docid_app, entry_date, entry_reason, search_appointment_entry]:
+    e.pack(pady=5)
+
+# Display Box for Appointments
+display_appointment_box = ctk.CTkTextbox(appointment_tab, width=700, height=200)
+display_appointment_box.pack(pady=10)
+
+# Appointment CRUD Functions
+def gui_add_appointment():
+    sqlite3.add_appointment(entry_pid_app.get(), entry_docid_app.get(), entry_date.get(), entry_reason.get())
+    gui_view_appointments()
+
+def gui_update_appointment():
+    sqlite3.update_appointment(entry_aid.get(), entry_pid_app.get(), entry_docid_app.get(), entry_date.get(), entry_reason.get())
+    gui_view_appointments()
+
+def gui_delete_appointment():
+    sqlite3.delete_appointment(entry_aid.get())
+    gui_view_appointments()
+
+def gui_view_appointments():
+    display_appointment_box.delete("0.0", "end")
+    for appointment in sqlite3.view_all_appointments():
+        display_appointment_box.insert("end", f"{appointment}\n")
+
+def gui_search_appointment():
+    display_appointment_box.delete("0.0", "end")
+    for appointment in sqlite3.search_appointments(search_appointment_entry.get()):
+        display_appointment_box.insert("end", f"{appointment}\n")
+
+# Appointment Buttons
+btn_appointment_frame = ctk.CTkFrame(appointment_tab)
+btn_appointment_frame.pack(pady=10)
+
+ctk.CTkButton(btn_appointment_frame, text="Add", command=gui_add_appointment).pack(side="left", padx=10)
+ctk.CTkButton(btn_appointment_frame, text="Update", command=gui_update_appointment).pack(side="left", padx=10)
+ctk.CTkButton(btn_appointment_frame, text="Delete", command=gui_delete_appointment).pack(side="left", padx=10)
+ctk.CTkButton(btn_appointment_frame, text="View All", command=gui_view_appointments).pack(side="left", padx=10)
+ctk.CTkButton(btn_appointment_frame, text="Search", command=gui_search_appointment).pack(side="left", padx=10)
+
+
+# -------------------
+# Treatment Tab Setup
+# -------------------
+# Treatment Input Fields
+entry_tid = ctk.CTkEntry(treatment_tab, placeholder_text="Treatment ID")
+entry_pid_treat = ctk.CTkEntry(treatment_tab, placeholder_text="Patient ID")
+entry_description = ctk.CTkEntry(treatment_tab, placeholder_text="Description")
+entry_cost = ctk.CTkEntry(treatment_tab, placeholder_text="Cost")
+search_treatment_entry = ctk.CTkEntry(treatment_tab, placeholder_text="Search by Description")
+
+for e in [entry_tid, entry_pid_treat, entry_description, entry_cost, search_treatment_entry]:
+    e.pack(pady=5)
+
+# Display Box for Treatments
+display_treatment_box = ctk.CTkTextbox(treatment_tab, width=700, height=200)
+display_treatment_box.pack(pady=10)
+
+# Treatment CRUD Functions
+def gui_add_treatment():
+    sqlite3.add_treatment(entry_pid_treat.get(), entry_description.get(), entry_cost.get())
+    gui_view_treatments()
+
+def gui_update_treatment():
+    sqlite3.update_treatment(entry_tid.get(), entry_pid_treat.get(), entry_description.get(), entry_cost.get())
+    gui_view_treatments()
+
+def gui_delete_treatment():
+    sqlite3.delete_treatment(entry_tid.get())
+    gui_view_treatments()
+
+def gui_view_treatments():
+    display_treatment_box.delete("0.0", "end")
+    for treatment in sqlite3.view_all_treatments():
+        display_treatment_box.insert("end", f"{treatment}\n")
+
+def gui_search_treatment():
+    display_treatment_box.delete("0.0", "end")
+    for treatment in sqlite3.search_treatments(search_treatment_entry.get()):
+        display_treatment_box.insert("end", f"{treatment}\n")
+
+# Treatment Buttons
+btn_treatment_frame = ctk.CTkFrame(treatment_tab)

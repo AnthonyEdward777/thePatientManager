@@ -1,0 +1,203 @@
+import sqlite3
+
+# Connect to database
+conn = sqlite3.connect('Healthcare_Patient_Management_System.db')
+cursor = conn.cursor()
+
+# Add doctor
+def add_doctor(first_name, last_name, specialty, phone):
+    cursor.execute("INSERT INTO Doctors (FirstName, LastName, Specialty, Phone) VALUES (?, ?, ?, ?)",
+                   (first_name, last_name, specialty, phone))
+    conn.commit()
+
+# Remove doctor by ID
+def remove_doctor(doctor_id):
+    cursor.execute("DELETE FROM Doctors WHERE DoctorID = ?", (doctor_id,))
+    conn.commit()
+
+# Update doctor info by ID
+def update_doctor(doctor_id, first_name=None, last_name=None, specialty=None, phone=None):
+    updates = []
+    values = []
+    if first_name:
+        updates.append("FirstName = ?")
+        values.append(first_name)
+    if last_name:
+        updates.append("LastName = ?")
+        values.append(last_name)
+    if specialty:
+        updates.append("Specialty = ?")
+        values.append(specialty)
+    if phone:
+        updates.append("Phone = ?")
+        values.append(phone)
+    values.append(doctor_id)
+    query = f"UPDATE Doctors SET {', '.join(updates)} WHERE DoctorID = ?"
+    cursor.execute(query, values)
+    conn.commit()
+
+    # View all doctors
+def view_all_doctors():
+    cursor.execute("SELECT * FROM Doctors")
+    return cursor.fetchall()
+
+# Search doctors by name or specialty
+def search_doctors(keyword):
+    keyword = f"%{keyword}%"
+    cursor.execute("""
+        SELECT * FROM Doctors 
+        WHERE FirstName LIKE ? OR LastName LIKE ? OR Specialty LIKE ?
+    """, (keyword, keyword, keyword))
+    return cursor.fetchall()
+
+
+    # Add patient
+def add_patient(first_name, last_name, dob, gender, phone, doctor_id=None):
+    cursor.execute("INSERT INTO Patients (FirstName, LastName, DOB, Gender, Phone, DoctorID) VALUES (?, ?, ?, ?, ?, ?)",
+                   (first_name, last_name, dob, gender, phone, doctor_id))
+    conn.commit()
+
+# Remove patient by ID
+def remove_patient(patient_id):
+    cursor.execute("DELETE FROM Patients WHERE PatientID = ?", (patient_id,))
+    conn.commit()
+
+# Update patient info by ID
+def update_patient(patient_id, first_name=None, last_name=None, dob=None, gender=None, phone=None, doctor_id=None):
+    updates = []
+    values = []
+    if first_name:
+        updates.append("FirstName = ?")
+        values.append(first_name)
+    if last_name:
+        updates.append("LastName = ?")
+        values.append(last_name)
+    if dob:
+        updates.append("DOB = ?")
+        values.append(dob)
+    if gender:
+        updates.append("Gender = ?")
+        values.append(gender)
+    if phone:
+        updates.append("Phone = ?")
+        values.append(phone)
+    if doctor_id is not None:
+        updates.append("DoctorID = ?")
+        values.append(doctor_id)
+    values.append(patient_id)
+    query = f"UPDATE Patients SET {', '.join(updates)} WHERE PatientID = ?"
+    cursor.execute(query, values)
+    conn.commit()
+
+# View all patients
+def view_all_patients():
+    cursor.execute("SELECT * FROM Patients")
+    return cursor.fetchall()
+
+# Search patients by name or phone
+def search_patients(keyword):
+    keyword = f"%{keyword}%"
+    cursor.execute("""
+        SELECT * FROM Patients 
+        WHERE FirstName LIKE ? OR LastName LIKE ? OR Phone LIKE ?
+    """, (keyword, keyword, keyword))
+    return cursor.fetchall()
+
+# Add appointment
+def add_appointment(patient_id, doctor_id, date, time, reason):
+    cursor.execute("""
+        INSERT INTO Appointments (PatientID, DoctorID, Date, Time, Reason)
+        VALUES (?, ?, ?, ?, ?)
+    """, (patient_id, doctor_id, date, time, reason))
+    conn.commit()
+
+# Remove appointment by ID
+def remove_appointment(appointment_id):
+    cursor.execute("DELETE FROM Appointments WHERE AppointmentID = ?", (appointment_id,))
+    conn.commit()
+
+# Update appointment by ID
+def update_appointment(appointment_id, date=None, time=None, reason=None):
+    updates = []
+    values = []
+    if date:
+        updates.append("Date = ?")
+        values.append(date)
+    if time:
+        updates.append("Time = ?")
+        values.append(time)
+    if reason:
+        updates.append("Reason = ?")
+        values.append(reason)
+    values.append(appointment_id)
+    query = f"UPDATE Appointments SET {', '.join(updates)} WHERE AppointmentID = ?"
+    cursor.execute(query, values)
+    conn.commit()
+
+# View all appointments
+def view_all_appointments():
+    cursor.execute("SELECT * FROM Appointments")
+    return cursor.fetchall()
+
+# Search appointments by patient name
+def search_appointments_by_patient_name(keyword):
+    keyword = f"%{keyword}%"
+    cursor.execute("""
+        SELECT a.* FROM Appointments a
+        JOIN Patients p ON a.PatientID = p.PatientID
+        WHERE p.FirstName LIKE ? OR p.LastName LIKE ?
+    """, (keyword, keyword))
+    return cursor.fetchall()
+
+# Add treatment
+def add_treatment(patient_id, doctor_id, date, description, medication):
+    cursor.execute("""
+        INSERT INTO Treatments (PatientID, DoctorID, Date, Description, Medication)
+        VALUES (?, ?, ?, ?, ?)
+    """, (patient_id, doctor_id, date, description, medication))
+    conn.commit()
+
+# Remove treatment by ID
+def remove_treatment(treatment_id):
+    cursor.execute("DELETE FROM Treatments WHERE TreatmentID = ?", (treatment_id,))
+    conn.commit()
+
+# Update treatment by ID
+def update_treatment(treatment_id, date=None, description=None, medication=None):
+    updates = []
+    values = []
+    if date:
+        updates.append("Date = ?")
+        values.append(date)
+    if description:
+        updates.append("Description = ?")
+        values.append(description)
+    if medication:
+        updates.append("Medication = ?")
+        values.append(medication)
+    values.append(treatment_id)
+    query = f"UPDATE Treatments SET {', '.join(updates)} WHERE TreatmentID = ?"
+    cursor.execute(query, values)
+    conn.commit()
+
+# View all treatments
+def view_all_treatments():
+    cursor.execute("SELECT * FROM Treatments")
+    return cursor.fetchall()
+
+# Search treatments by patient name
+def search_treatments_by_patient_name(keyword):
+    keyword = f"%{keyword}%"
+    cursor.execute("""
+        SELECT t.* FROM Treatments t
+        JOIN Patients p ON t.PatientID = p.PatientID
+        WHERE p.FirstName LIKE ? OR p.LastName LIKE ?
+    """, (keyword, keyword))
+    return cursor.fetchall()
+
+def print_results(results, label=""):
+    if label:
+        print(f"--- {label} ---")
+    for row in results:
+        print(row)
+    print()
