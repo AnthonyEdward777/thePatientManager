@@ -84,7 +84,7 @@ class PatientManagerApp(tk.Tk):
         for row in self.tree.get_children():
             self.tree.delete(row)
         for pat in database.patients("", 0, 0).fetchAllPatients():
-            self.tree.insert("", tk.END, values=(pat[0], pat[1], pat[2]))
+            self.tree.insert("", tk.END, values=(pat[1], pat[0], pat[2]))
 
     def add_patient(self):
         name = self.entries["name"].get().strip()
@@ -122,6 +122,7 @@ class PatientManagerApp(tk.Tk):
         database.patients("", 0, nid).deletePatient()
         self.refresh_patients()
         self.clear_form()
+        self.on_select(None)  # Clear info labels after deletion
 
     def on_select(self, event):
         selected = self.tree.selection()
