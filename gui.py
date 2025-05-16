@@ -16,52 +16,67 @@ class PatientManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Patient Manager")
-        self.geometry("800x400")
+        self.geometry("900x450")
         self.configure(bg=DARK_BG)
         style = ttk.Style(self)
         style.theme_use("clam")
-        style.configure("Treeview", background=ENTRY_BG, foreground=FG, fieldbackground=ENTRY_BG, rowheight=28)
-        style.configure("Treeview.Heading", background=DARK_BG, foreground=BTN_GREEN, font=("Arial", 10, "bold"))
-        style.map("Treeview", background=[("selected", TABLE_HL)])
-        style.configure("TLabel", background=DARK_BG, foreground=FG, font=("Arial", 10))
-        style.configure("TButton", font=("Arial", 10, "bold"))
+        style.configure("Treeview", 
+                        background=ENTRY_BG, 
+                        foreground=FG, 
+                        fieldbackground=ENTRY_BG, 
+                        rowheight=32,
+                        font=("Segoe UI", 12))
+        style.configure("Treeview.Heading", 
+                        background="#222", 
+                        foreground="#00ffc8", 
+                        font=("Segoe UI", 13, "bold"))
+        style.map("Treeview", background=[("selected", "#00ffc8")], foreground=[("selected", "#222")])
+        style.configure("TLabel", background=DARK_BG, foreground=FG, font=("Segoe UI", 12, "bold"))
+        style.configure("TButton", font=("Segoe UI", 12, "bold"), padding=6)
         self.create_patient_tab()
+
+    def flashy_button(self, parent, text, bg, fg, command):
+        btn = tk.Button(parent, text=text, bg=bg, fg=fg, font=("Segoe UI", 12, "bold"), activebackground=fg, activeforeground=bg, command=command, relief=tk.FLAT, bd=2, highlightthickness=2, highlightbackground=bg)
+        btn.pack(fill=tk.X, pady=4)
+        btn.bind("<Enter>", lambda e: btn.config(bg=fg, fg=bg))
+        btn.bind("<Leave>", lambda e: btn.config(bg=bg, fg=fg))
+        return btn
 
     def create_patient_tab(self):
         # Left form
         form = tk.Frame(self, bg=DARK_BG)
-        form.pack(side=tk.LEFT, fill=tk.Y, padx=20, pady=20)
+        form.pack(side=tk.LEFT, fill=tk.Y, padx=24, pady=24)
         labels = ["Name:", "Age:"]
         self.entries = {}
         for lbl in labels:
-            tk.Label(form, text=lbl, bg=DARK_BG, fg=FG, anchor="w").pack(fill=tk.X, pady=2)
-            ent = tk.Entry(form, bg=ENTRY_BG, fg=FG, insertbackground=FG, relief=tk.FLAT)
+            tk.Label(form, text=lbl, bg=DARK_BG, fg="#00ffc8", anchor="w", font=("Segoe UI", 12, "bold")).pack(fill=tk.X, pady=2)
+            ent = tk.Entry(form, bg=ENTRY_BG, fg=FG, insertbackground=FG, relief=tk.FLAT, font=("Segoe UI", 12))
             ent.pack(fill=tk.X, pady=2)
             self.entries[lbl[:-1].lower()] = ent
 
-        tk.Button(form, text="Add Patient", bg=BTN_GREEN, fg=DARK_BG, command=self.add_patient).pack(fill=tk.X, pady=(10,2))
-        tk.Button(form, text="New Patient", bg=BTN_ORANGE, fg=FG, command=self.clear_form).pack(fill=tk.X, pady=2)
-        tk.Button(form, text="Delete Patient", bg=BTN_RED, fg=FG, command=self.delete_patient).pack(fill=tk.X, pady=2)
+        self.flashy_button(form, "Add Patient", BTN_GREEN, DARK_BG, self.add_patient)
+        self.flashy_button(form, "New Patient", BTN_ORANGE, FG, self.clear_form)
+        self.flashy_button(form, "Delete Patient", BTN_RED, FG, self.delete_patient)
 
         # Right table
         right_frame = tk.Frame(self, bg=DARK_BG)
-        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=20)
+        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=24)
 
         columns = ("NID", "Name", "Age")
         self.tree = ttk.Treeview(right_frame, columns=columns, show="headings", selectmode="browse")
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100 if col != "Name" else 150, anchor="center")
+            self.tree.column(col, width=120 if col != "Name" else 180, anchor="center")
         self.tree.pack(fill=tk.BOTH, expand=True)
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
         self.refresh_patients()
 
         # Info display below table
-        info_frame = tk.Frame(right_frame, bg=DARK_BG)
-        info_frame.pack(fill=tk.X, pady=(10,0))
+        info_frame = tk.Frame(right_frame, bg="#00ffc8", bd=3, relief=tk.RIDGE)
+        info_frame.pack(fill=tk.X, pady=(16,0), padx=10)
         self.info_labels = {}
         for field in columns:
-            lbl = tk.Label(info_frame, text=f"{field}: ", bg=DARK_BG, fg=FG, font=("Arial", 10, "bold"), anchor="w")
+            lbl = tk.Label(info_frame, text=f"{field}: ", bg="#00ffc8", fg="#222", font=("Segoe UI", 12, "bold"), anchor="w")
             lbl.pack(fill=tk.X)
             self.info_labels[field] = lbl
 
@@ -72,9 +87,13 @@ class PatientManagerApp(tk.Tk):
             self.tree.insert("", tk.END, values=(pat[0], pat[1], pat[2]))
 
     def add_patient(self):
-        name = self.entries["name"].get()
+        name = self.entries["name"].get().strip()
+        age_str = self.entries["age"].get().strip()
+        if not name or not age_str:
+            messagebox.showerror("Error", "Both Name and Age are required.")
+            return
         try:
-            age = int(self.entries["age"].get())
+            age = int(age_str)
         except ValueError:
             messagebox.showerror("Error", "Age must be a number.")
             return
